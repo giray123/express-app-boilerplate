@@ -33,7 +33,7 @@ module.exports = function(req, res){
                             id: user_id
                         }
                         // generate JWT access token which expires in 5 minutes
-                        const accessToken = jwt.sign(payload, config.jwtSecret, {expiresIn: 300})
+                        const accessToken = jwt.sign(payload, config.jwtSecret, {expiresIn: config.app.auth.accessToken.expiresIn})
 
                         res.json({
                             accessToken: accessToken
