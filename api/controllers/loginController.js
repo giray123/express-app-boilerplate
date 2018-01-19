@@ -3,9 +3,11 @@
 const config = require('../../config')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
+const randToken = require('rand-token')
 
 //User model
 const User = require('../models/userModel')
+const Token = require('../models/tokenModel')
 
 module.exports = function(req, res) {
     if(req.body.email && req.body.password){
@@ -31,14 +33,28 @@ module.exports = function(req, res) {
                             const payload = {
                                 id: user.id
                             }
-                            // generate JWT token
-                            const token = jwt.sign(payload, config.jwtSecret, {expiresIn: '7d'})
-                            //expired jwt for debugging
+                            // generate JWT access token which expires in 5 minutes
+                            const accessToken = jwt.sign(payload, config.jwtSecret, {expiresIn: 300})
+                            // expired jwt for debugging
                             // const token = jwt.sign({id: user.id, exp: 1514840023}, config.jwtSecret)
-                            // send JWT token
-                            res.json({
-                                token: token
+
+                            // generate refresh token in the for of `user_id.uid`
+                            const refreshToken = new Token({
+                                user_id: user.id,
+                                refreshToken: user.id+'.'+randToken.uid(40)
                             })
+
+                            // save refreshToken to database
+                            refreshToken.save((err, user)=>{
+                                if(err) res.send(err)
+                                // send JWT token
+                                res.json({
+                                    accessToken: accessToken,
+                                    refreshToken: refreshToken.refreshToken
+                                })
+
+                            })
+
                         }
                     })
                 }

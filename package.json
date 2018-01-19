@@ -22,6 +22,7 @@
     "passport-google-oauth": "^1.0.0",
     "passport-jwt": "^3.0.1",
     "passport-twitter": "^1.0.4",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "rand-token": "^0.4.0"
   }
 }
